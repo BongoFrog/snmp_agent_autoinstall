@@ -76,7 +76,7 @@ if command -v sudo ufw status &> /dev/null; then
   sudo ufw allow 161
 elif command -v iptables &> /dev/null; then
   sudo iptables -A INPUT -p udp --dport 161 -j ACCEPT
-elif command -v (sudo systemctl is-active firewalld) == "active"; then
+elif systemctl is-active firewalld; then
   sudo firewall-cmd --permanent --zone=public --add-port=161/udp
   sudo firewall-cmd --reload
 else
