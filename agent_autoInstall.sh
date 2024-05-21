@@ -74,7 +74,7 @@ echo "rocommunity $comm_string $IP" >> "$config_file"
 #open port 161 on firewall
 if command -v sudo ufw status &> /dev/null; then
   sudo ufw allow 161
-elif command command -v iptables &> /dev/null; then
+elif command -v iptables &> /dev/null; then
   sudo iptables -A INPUT -p udp --dport 161 -j ACCEPT
 elif command -v (sudo systemctl is-active firewalld) == "active"; then
   sudo firewall-cmd --permanent --zone=public --add-port=161/udp
