@@ -80,7 +80,8 @@ elif systemctl is-active firewalld; then
   sudo cp snmp.xml /etc/firewalld/services/
   sudo firewall-cmd --permanent --new-service=snmp
   default_zone=$(sudo firewall-cmd --get-default_zone)
-  sudo firewall-cmd --permanent --zone="$default_zone" --add-port=161/udp
+  sudo firewall-cmd --zone="$default_zone" --add-service=snmp --permanent
+  sudo firewall-cmd --zone="$default_zone" --add-port=161/udp --permanent
   sudo firewall-cmd --reload
 else
   echo "No firewall was found or can't detect the firewall."
