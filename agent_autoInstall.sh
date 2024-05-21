@@ -68,7 +68,7 @@ echo "Backed up config file to : $config_file.bak"
 
 #Add the config
 echo "" >> "$config_file"
-echo "agentAddress udp:0.0.0.0:161" >>"$config_file"
+echo "agentAddress udp:161" >>"$config_file"
 echo "rocommunity $comm_string $IP" >> "$config_file"
 
 #open port 161 on firewall
