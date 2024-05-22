@@ -85,7 +85,7 @@ elif systemctl is-active firewalld; then
 else
   echo "No firewall was found or can't detect the firewall."
 
-fi
+fi~
 
 #restart snmp service to apply the change
 sudo service snmpd restart
