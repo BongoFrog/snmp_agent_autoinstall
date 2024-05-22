@@ -1,19 +1,19 @@
 #!/bin/bash
 
-IP="$1"
-comm_string="$2"
-
-#usage 
-if [ $# -ne 2 ]; then
-  echo "Usage: $0 <monitor's IP> <community string>"
-  echo "   <monitor's IP>: The IPv4 adrress or domain of the monitor host "
-  echo "   <community string>: The community string to let monitor host connect to"
+# Check sudo privileges
+if [ "$EUID" -ne 0 ]; then
+  echo "Error: This script requires sudo privileges."
   exit 1
 fi
 
-# Check sudo privilige
-if ! sudo -n true >/dev/null 2>&1; then
-  echo "Error: This script requires sudo privileges."
+IP="$1"
+comm_string="$2"
+
+# Usage message
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 <monitor's IP> <community string>"
+  echo "   <monitor's IP>: The IPv4 address or domain of the monitor host."
+  echo "   <community string>: The community string to let monitor host connect to."
   exit 1
 fi
 
@@ -29,63 +29,70 @@ else
   exit 1
 fi
 
-#update and install snmp agent 
+# Update package lists
 case $package_manager in
   yum)
     sudo yum update -y
-    sudo yum install net-snmp -y
     ;;
   apt-get)
     sudo apt-get update -y
+    ;;
+  dnf)
+    sudo dnf makecache
+    ;;
+esac
+
+# Install SNMP agent
+case $package_manager in
+  yum)
+    sudo yum install net-snmp -y
+    ;;
+  apt-get)
     sudo apt-get install snmpd -y
     ;;
   dnf)
-    sudo dnf update -y
     sudo dnf install net-snmp -y
     ;;
 esac
 
 # Check for successful installation
-if [ $? -eq 0 ]; then
-  echo "SNMP agent installed successfully."
-else
+if [ $? -ne 0 ]; then
   echo "Error: Failed to install SNMP agent."
+  exit 1
 fi
 
-
-#Back up and configure the monitor IP, community string
-
-#Check config file
+# Backup and configure the monitor IP, community string
 config_file="/etc/snmp/snmpd.conf"
+
+# Check config file
 if [ ! -f "$config_file" ]; then
   echo "Error: SNMP configuration file not found."
   exit 1
 fi
 
-#Backup the config
+# Backup the config
 sudo cp "$config_file" "$config_file.bak"
-sudo echo "Backed up config file to : $config_file.bak"
+echo "Backed up config file to: $config_file.bak"
 
-#Add the config
-sudo echo "" >> "$config_file"
-sudo echo "agentAddress udp:161" >>"$config_file"
-sudo echo "rocommunity $comm_string $IP" >> "$config_file"
+# Add the config
+sudo tee -a "$config_file" > /dev/null <<EOT
 
-#open port 161 on firewall
-if command -v sudo ufw status &> /dev/null; then
+# Added by SNMP setup script
+agentAddress udp:161
+rocommunity $comm_string $IP
+EOT
+
+# Open port 161 on firewall
+if command -v ufw &> /dev/null; then
   sudo ufw allow 161
 elif command -v iptables &> /dev/null; then
   sudo iptables -A INPUT -p udp --dport 161 -j ACCEPT
 elif systemctl is-active firewalld; then
-  sudo cp snmp.xml /etc/firewalld/services/snmp.xml
-  sudo chmod g+r /etc/firewalld/services/snmp.xml
-  sudo default_zone=$(sudo firewall-cmd --get-default-zone)
-  sudo firewall-cmd --zone="$default_zone" --add-service=snmp --permanent
+  sudo firewall-cmd --add-port=161/udp --permanent
   sudo firewall-cmd --reload
 else
-  echo "No firewall was found or can't detect the firewall."
-
+  echo "Warning: No supported firewall was found or can't detect the firewall."
 fi
-#restart snmp service to apply the change
-sudo service snmpd restart
 
+# Restart SNMP service
+sudo systemctl restart snmpd
