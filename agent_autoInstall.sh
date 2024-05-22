@@ -77,7 +77,7 @@ if command -v sudo ufw status &> /dev/null; then
 elif command -v iptables &> /dev/null; then
   sudo iptables -A INPUT -p udp --dport 161 -j ACCEPT
 elif systemctl is-active firewalld; then
-  sudo cp snmp.xml /etc/firewalld/services
+  sudo cp snmp.xml /etc/firewalld/services/snmp.xml
   sudo chmod g+r /etc/firewalld/services/snmp.xml
   sudo default_zone=$(sudo firewall-cmd --get-default-zone)
   sudo firewall-cmd --zone="$default_zone" --add-service=snmp --permanent
@@ -85,8 +85,7 @@ elif systemctl is-active firewalld; then
 else
   echo "No firewall was found or can't detect the firewall."
 
-fi~
-
+fi
 #restart snmp service to apply the change
 sudo service snmpd restart
 
