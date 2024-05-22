@@ -87,8 +87,8 @@ if command -v ufw &> /dev/null; then
   sudo ufw allow 161
 elif command -v iptables &> /dev/null; then
   sudo iptables -A INPUT -p udp --dport 161 -j ACCEPT
-elif systemctl is-active firewalld; then
-  sudo firewall-cmd --add-port=161/udp --permanent
+elif systemctl is-active firewalld | grep -q "active" ; then
+  sudo firewall-cmd --add-port=161/udp --permanent 
   sudo firewall-cmd --reload
 else
   echo "Warning: No supported firewall was found or can't detect the firewall."
