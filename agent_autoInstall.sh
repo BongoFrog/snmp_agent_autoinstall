@@ -63,13 +63,13 @@ if [ ! -f "$config_file" ]; then
 fi
 
 #Backup the config
-cp "$config_file" "$config_file.bak"
-echo "Backed up config file to : $config_file.bak"
+sudo cp "$config_file" "$config_file.bak"
+sudo echo "Backed up config file to : $config_file.bak"
 
 #Add the config
-echo "" >> "$config_file"
-echo "agentAddress udp:161" >>"$config_file"
-echo "rocommunity $comm_string $IP" >> "$config_file"
+sudo echo "" >> "$config_file"
+sudo echo "agentAddress udp:161" >>"$config_file"
+sudo echo "rocommunity $comm_string $IP" >> "$config_file"
 
 #open port 161 on firewall
 if command -v sudo ufw status &> /dev/null; then
@@ -77,11 +77,10 @@ if command -v sudo ufw status &> /dev/null; then
 elif command -v iptables &> /dev/null; then
   sudo iptables -A INPUT -p udp --dport 161 -j ACCEPT
 elif systemctl is-active firewalld; then
-  sudo cp snmp.xml /etc/firewalld/services/
-  sudo firewall-cmd --permanent --new-service=snmp
-  default_zone=$(sudo firewall-cmd --get-default_zone)
+  sudo cp snmp.xml /etc/firewalld/services
+  sudo chmod g+r /etc/firewalld/services/snmp.xml
+  sudo default_zone=$(sudo firewall-cmd --get-default-zone)
   sudo firewall-cmd --zone="$default_zone" --add-service=snmp --permanent
-  sudo firewall-cmd --zone="$default_zone" --add-port=161/udp --permanent
   sudo firewall-cmd --reload
 else
   echo "No firewall was found or can't detect the firewall."
