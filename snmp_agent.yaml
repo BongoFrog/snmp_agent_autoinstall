@@ -1,0 +1,11 @@
+---
+- name: Execute bash script with arguments
+  hosts: Linux
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Execute snmp script with ansible
+      shell:  agent_autoInstall.sh "{{ arg1 }}" "{{ arg2 }}"
+      vars:
+        arg1: value1
+        arg2: value2
