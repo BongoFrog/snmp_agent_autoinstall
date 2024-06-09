@@ -82,7 +82,8 @@ This component uses an Ansible playbook, `snmp_agent.yml`, to automate the deplo
 Run the playbook using the following command:
 
 ```bash
-ansible-playbook snmp_agent.yml
+ansible-playbook -i inventory.ini snmp_agent.yml --extra-vars "arg1=<monitor's IP> arg2=<community string>"
+
 ```
 
 ## Conclusion
