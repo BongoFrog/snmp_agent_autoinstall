@@ -24,6 +24,8 @@ elif [ -x "$(command -v apt-get)" ]; then
   package_manager="apt-get"
 elif [ -x "$(command -v dnf)" ]; then
   package_manager="dnf"
+elif [ -x "$(command -v zypper)" ]; then
+  package_manager="zypper"
 else
   echo "Error: Unsupported package manager. This script supports yum, apt-get, or dnf."
   exit 1
@@ -40,6 +42,9 @@ case $package_manager in
   dnf)
     sudo dnf makecache
     ;;
+  zypper)
+    sudo zypper refresh
+    ;;
 esac
 
 # Install SNMP agent
@@ -52,6 +57,9 @@ case $package_manager in
     ;;
   dnf)
     sudo dnf install net-snmp -y
+    ;;
+  zypper)
+    sudo zypper install net-snmp -y
     ;;
 esac
 
