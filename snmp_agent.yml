@@ -1,6 +1,6 @@
 ---
 - name: Execute bash script with arguments
-  hosts: Linux
+  hosts: snmp_agent
   gather_facts: no
   become: yes
   tasks:
