@@ -3,9 +3,16 @@
   hosts: snmp_agent
   gather_facts: no
   become: yes
+
   tasks:
+    - name: Copy script to tmp directory
+      copy:
+        src: ./agent_autoInstall.sh
+        dest: /tmp/agent_autoInstall.sh
+        mode: '0755'
+
     - name: Execute snmp script with ansible
-      shell:  agent_autoInstall.sh "{{ arg1 }}" "{{ arg2 }}"
+      shell: /tmp/agent_autoInstall.sh "{{ arg1 }}" "{{ arg2 }}"
       vars:
         arg1: value1
         arg2: value2
