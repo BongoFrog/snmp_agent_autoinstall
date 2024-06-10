@@ -50,16 +50,16 @@ esac
 # Install SNMP agent
 case $package_manager in
   yum)
-    sudo yum install net-snmp -y
+    sudo yum install -y net-snmp 
     ;;
   apt-get)
-    sudo apt-get install snmpd -y
+    sudo apt-get install -y snmpd 
     ;;
   dnf)
-    sudo dnf install net-snmp -y
+    sudo dnf install -y net-snmp 
     ;;
   zypper)
-    sudo zypper install net-snmp -y
+    sudo zypper install -y net-snmp 
     ;;
 esac
 
