@@ -82,6 +82,8 @@ fi
 sudo cp "$config_file" "$config_file.bak"
 echo "Backed up config file to: $config_file.bak"
 
+#comment the default agentAddress
+sudo sed -i 's/^agentaddress/#agentaddress/g' "$config_file"
 # Add the config
 sudo tee -a "$config_file" > /dev/null <<EOT
 
