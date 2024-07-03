@@ -106,4 +106,5 @@ if systemctl is-active firewalld | grep -q "active" ; then
 fi
 
 # Restart SNMP service
+sudo systemctl enable snmpd
 sudo systemctl restart snmpd
