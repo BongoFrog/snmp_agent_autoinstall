@@ -97,6 +97,8 @@ fi
   echo "Allow port 161 on UFW"
 if command -v iptables &> /dev/null; then
   sudo iptables -A INPUT -p udp --dport 161 -j ACCEPT
+  sudo iptables -A OUTPUT -p udp --sport 161 -j ACCEPT
+
   echo "Allow port 161 on iptables."
 fi
 if systemctl is-active firewalld | grep -q "active" ; then
